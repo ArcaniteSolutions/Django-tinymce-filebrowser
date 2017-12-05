@@ -4,7 +4,7 @@ from django.utils.translation import ugettext as _
 
 
 def content_file_name(instance, filename):
-    return "uploaded/%s/%s/%s".format(datetime.datetime.now().strftime("%Y/%m/%d"), filename)
+    return "uploaded/{}/{}".format(datetime.datetime.now().strftime("%Y/%m/%d"), filename)
 
 
 class FileBrowserFile(models.Model):
@@ -27,5 +27,5 @@ class FileBrowserFile(models.Model):
 
     user_id = models.IntegerField(null=True, blank=True, verbose_name=_('Who does this file belong to?'))
 
-    def __unicode__(self):
-        return u'{0}'.format(self.uploaded_file.name)
+    def __str__(self):
+        return self.uploaded_file.name

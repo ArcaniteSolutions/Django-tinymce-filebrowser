@@ -125,32 +125,12 @@
         <div id="images_panel" class="panel {% if not upload_tab_active %}current{% endif %}">
 
             <h3>{% trans "Previously uploaded images" %}</h3>
-            <div id="toolbar"><form id="changelist-search" action="" method="get">
-              <div><!-- DIV needed for valid HTML -->
-                <label for="searchbar"><img src="{% static "admin/img/icon_searchbox.png" %}" alt="Search" /></label>
-                <input type="text" size="40" name="q" value="{{ query.q }}" id="searchbar" />
-                <input id="search-button" type="submit" value="{% trans 'Search' %}" />
-                {% if query.filter_type %}<input type="hidden" name="filter_type" value="{{ query.filter_type }}" />{% endif %}
-                {% if query.filter_date %}<input type="hidden" name="filter_date" value="{{ query.filter_date }}" />{% endif %}
-                {% if query.o %}<input type="hidden" name="o" value="{{ query.o }}" />{% endif %}
-                {% if query.ot %}<input type="hidden" name="ot" value="{{ query.ot }}" />{% endif %}
-                {% if query.pop %}<input type="hidden" name="pop" value="{{ query.pop }}" />{% endif %}
-                {% if query.type %}<input type="hidden" name="type" value="{{ query.type }}" />{% endif %}
-                {% if query.format %}<input type="hidden" name="format" value="{{ query.format }}" />{% endif %}
-                {% if query.dir %}<input type="hidden" name="dir" value="{{ query.dir|urlencode }}" />{% endif %}
-                {% ifequal query.pop '3' %} {# Custom CKEditor fields #}
-                    {% if query.CKEditor %}<input type="hidden" name="CKEditor" value="{{ query.CKEditor }}" />{% endif %}
-                    {% if query.CKEditorFuncNum %}<input type="hidden" name="CKEditorFuncNum" value="{{ query.CKEditorFuncNum }}" />{% endif %}
-                {% endifequal %}
-              </div>
-            </form></div>
-
             {% if object_list %}
               <ul class="images_list">
                 {% for img in object_list %}
                   <li>
                     {% thumbnail img.uploaded_file "100x100" crop="center" as thumb %}
-                      <a href="{{ img.uploaded_file.url }}" onClick="FileBrowserDialogue.file_in_use(this);return false;">
+                      <a href="{{ absolute_domain }}{{ img.uploaded_file.url }}" onClick="FileBrowserDialogue.file_in_use(this);return false;">
                         <img src="{{ thumb.url }}" width="{{ thumb.width }}" height="{{ thumb.height }}" border="0" />
                       </a>
                     {% endthumbnail %}
@@ -171,7 +151,7 @@
               <ul class="documents_list">
                 {% for doc in object_list %}
                   <li>
-                    <a href="{{ doc.uploaded_file.url }}" onClick="FileBrowserDialogue.file_in_use(this);return false;">
+                    <a href="{{ absolute_domain }}{{ doc.uploaded_file.url }}" onClick="FileBrowserDialogue.file_in_use(this);return false;">
                       {{ doc }}
                     </a>&nbsp;
                     <a href="{% url 'mce-filebrowser-remove-document' doc.id %}" title="{% trans 'Remove' %}" class="rm">x</a>
@@ -207,7 +187,7 @@
           </div>
       </div>
   </div>
-  <input type="hidden" name="selected_file" id="selected_file" value="{% if uploaded_file %}{{ uploaded_file.uploaded_file.url }}{% endif %}" />
+  <input type="hidden" name="selected_file" id="selected_file" value="{% if uploaded_file %}{{ absolute_domain }}{{ uploaded_file.uploaded_file.url }}{% endif %}" />
 
 
 </div>

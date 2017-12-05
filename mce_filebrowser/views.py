@@ -21,20 +21,17 @@ def filebrowser(request, file_type):
     is_images_dialog = (file_type == 'img')
     is_documents_dialog = (file_type == 'doc')
 
-    files = FileBrowserFile.objects.filter(file_type=file_type).filter(user_id=request.user.id)
+    files = FileBrowserFile.objects.filter(file_type=file_type).filter(user_id=request.user.id).order_by('pk')
 
     if request.POST:
-        if request.POST['q'] == '':
-            upload_form = FileUploadForm(request.POST, request.FILES)
-            upload_tab_active = True
+        upload_form = FileUploadForm(request.POST, request.FILES)
+        upload_tab_active = True
 
-            if upload_form.is_valid():
-                uploaded_file = upload_form.save(commit=False)
-                uploaded_file.file_type = file_type
-                uploaded_file.user_id = request.user.id
-                uploaded_file.save()
-        else:
-            files = files.filter(uploaded_file__contains=request.POST['q'])
+        if upload_form.is_valid():
+            uploaded_file = upload_form.save(commit=False)
+            uploaded_file.file_type = file_type
+            uploaded_file.user_id = request.user.id
+            uploaded_file.save()
 
     context = {
         'upload_form': upload_form,
@@ -43,7 +40,8 @@ def filebrowser(request, file_type):
         'is_images_dialog': is_images_dialog,
         'is_documents_dialog': is_documents_dialog,
         'LOCAL_MCE_FILEBROWSER_JQUERY': LOCAL_MCE_FILEBROWSER_JQUERY,
-        'LOCAL_MCE_FILEBROWSER_THEMECSS': LOCAL_MCE_FILEBROWSER_THEMECSS
+        'LOCAL_MCE_FILEBROWSER_THEMECSS': LOCAL_MCE_FILEBROWSER_THEMECSS,
+        'absolute_domain': request.build_absolute_uri('/')[:-1],
     }
 
     per_page = getattr(settings, 'FILEBROWSER_PER_PAGE', 20)
