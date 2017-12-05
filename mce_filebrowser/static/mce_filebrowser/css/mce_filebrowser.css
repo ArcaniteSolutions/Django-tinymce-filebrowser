@@ -1,10 +1,23 @@
-div.panel_wrapper {
-    height: 315px;
-    overflow-y: auto;
+html, body{
+    overflow: hidden;
+     margin: 0;
+    padding: 0;
 }
 
-div.panel fieldset {
-    margin-bottom: 15px;
+div#panel_wrapper {
+  height: 216px;
+  overflow-y: auto;
+}
+
+div#panel_wrapper h3 {
+  font-size: 150%;
+  font-weight: bold;
+
+  padding: 5px 0;
+}
+
+div.panel {
+	padding: 0 10px;
 }
 
 #images_panel ul.images_list {
@@ -26,29 +39,6 @@ div.panel fieldset {
     padding: 5px 0;
 }
 
-#images_panel ul.images_list li a.rm {
-    position: absolute;
-    top: 0;
-    right: 0;
-    display: block;
-    padding: 0 2px;
-    font-size: 12px;
-    font-weight: bold;
-    text-decoration: none;
-    background: #FF6466;
-    color: white; 
-}
-
-#documents_panel ul.documents_list li a.rm {
-    display: inline-block;
-    padding: 0 2px;
-    margin-left: 5px;
-    font-size: 11px;
-    font-weight: bold;
-    text-decoration: none;
-    background: #FF6466;
-    color: white; 
-}
 
 .pager a {
     display: inline-block;
@@ -60,3 +50,43 @@ div.panel fieldset {
     color: #ccc;
     cursor: default;
 }
+
+#images_panel ul.images_list li a.rm {
+	position: absolute;
+	top: 0;
+	right: 0;
+	display: block;
+	padding: 0 2px;
+	font-size: 12px;
+	font-weight: bold;
+	text-decoration: none;
+	background: #FF6466;
+	color: white;
+    cursor: pointer;
+}
+
+#documents_panel ul.documents_list li a.rm {
+    cursor: pointer;
+	display: inline-block;
+	padding: 0 2px;
+	margin-left: 5px;
+	font-size: 11px;
+	font-weight: bold;
+	text-decoration: none;
+	background: #FF6466;
+	color: white;
+}
+
+#searchbar {
+    border: 1px solid #B8B8B8;
+}
+
+#search-button {
+    border: 1px solid #B8B8B8;
+}
+
+#search-button:active {
+    background: #999999;
+}
+
+

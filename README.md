@@ -1,3 +1,17 @@
+This is a fork of https://github.com/aisayko/Django-tinymce-filebrowser
+
+Updated for TinyMCE 4 and added new settings which can be set as follows
+
+MCE_FILEBROWSER_JQUERY = 'js/jquery-1.9.1.min.js'
+
+MCE_FILEBROWSER_UPLOADDIR = 'uploads/mce_filebrowser'
+
+MCE_FILEBROWSER_THEMECSS = 'js/3rdparty/tinymce4.0.2/skins/lightgray/skin.min.css'
+
+MCE_FILEBROWSER_PERUSER = True
+
+South migrations have also beed added
+
 django-tinymce-filebrowser
 ===
 

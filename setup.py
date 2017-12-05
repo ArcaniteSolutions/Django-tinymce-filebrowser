@@ -10,13 +10,13 @@ from setuptools import setup, find_packages
 
 setup(
     name='Django-tinymce-filebrowser',
-    version='0.1.1',
+    version='0.1.6',
     url='https://github.com/aisayko/Django-tinymce-filebrowser',
     license='MIT License',
     author='Alex Isayko',
     author_email='alex.isayko@gmail.com',
     description='Django-based file uploader and viewer for TinyMCE',
-    keywords = "django tinymce fileupload",
+    keywords="django tinymce fileupload",
     long_description=__doc__,
     packages=find_packages(),
     include_package_data=True,

@@ -1,33 +1,90 @@
-{% load staticfiles i18n thumbnail %}
+{% load static i18n thumbnail %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>{% trans "File browser" %}</title>
+
+  <link rel="stylesheet" href="{% static LOCAL_MCE_FILEBROWSER_THEMECSS %}" type="text/css" media="screen, projection" />
   <link rel="stylesheet" href="{% static 'mce_filebrowser/css/mce_filebrowser.css' %}" type="text/css" media="screen, projection" />
-  <script type="text/javascript" src="{% static 'tiny_mce/tiny_mce_popup.js' %}"></script>
-  <script type="text/javascript" src="{% static 'tiny_mce/utils/mctabs.js' %}"></script>
+  <script src="{% static LOCAL_MCE_FILEBROWSER_JQUERY %}" type="text/javascript"></script>
   <script language="javascript" type="text/javascript">
+    // document.domain = /(\w+)(.\w+)?$/.exec(location.hostname)[0];
     function make_file_insertion() {
-      var URL = document.upload_form.selected_file.value;
-      var win = tinyMCEPopup.getWindowArg("window");
-      
-      win.document.getElementById(tinyMCEPopup.getWindowArg("input")).value = URL;
-      
+      var URL = $('#selected_file').val();
+
+      var win = parent.tinyMCE.activeEditor.windowManager.getParams().window;
+
+      win.document.getElementById(parent.tinyMCE.activeEditor.windowManager.getParams().input).value = URL;
+
       if (typeof(win.ImageDialog) != "undefined") {
         if (win.ImageDialog.getImageData) win.ImageDialog.getImageData();
         if (win.ImageDialog.showPreviewImage) win.ImageDialog.showPreviewImage(URL);
       }
-      
-      tinyMCEPopup.close();
+
+      parent.tinyMCE.activeEditor.windowManager.close();
     }
-    
+
     var FileBrowserDialogue = {
+      listing_tab: null,
+      listing_panel: null,
+      upload_tab: null,
+      upload_panel: null,
       init: function () {
-        
+           var self=this;
+
+            {% if is_images_dialog %}
+                this.listing_tab = $("#images_tab");
+                this.listing_panel = $("#images_panel");
+            {% endif %}
+            {% if is_documents_dialog %}
+                this.listing_tab = $("#documents_tab");
+                this.listing_panel = $("#documents_panel");
+            {% endif %}
+
+            this.upload_tab = $("#upload_tab");
+            this.upload_panel = $("#upload_panel");
+
+
+            $(this.listing_panel).hide();
+            $(this.upload_panel).hide();
+
+            if($(this.listing_panel).hasClass('current')){
+                 $(this.listing_panel).show();
+                 $(this.upload_panel).hide();
+            }
+            else{
+                $(this.upload_panel).show();
+                $(this.listing_panel).hide();
+            }
+
+            $(this.upload_tab).click(function(){
+
+                $(self.listing_tab).removeClass("mce-active");
+                $(self.upload_tab).addClass("mce-active");
+                $(self.listing_panel).hide();
+                $(self.upload_panel).show();
+            });
+            $(this.listing_tab).click(function(){
+                $(self.upload_tab).removeClass("mce-active");
+                $(self.listing_tab).addClass("mce-active");
+                $(self.upload_panel).hide();
+                $(self.listing_panel).show();
+            });
+            var insert_button = $("#insert_button");//insert_button
+            var cancel_button = $("#cancel_button");//cancel_button
+
+            $(insert_button).click(function(){
+                self.image_select();
+            });
+
+            $(cancel_button).click(function(){
+                parent.tinyMCE.activeEditor.windowManager.close();
+            });
       },
       image_select: function () {
-        if(document.getElementById("upload_tab").className == 'current') {
-          document.upload_form.submit();
+        if($(this.upload_tab).hasClass('mce-active')) {
+          $("#upload_form").submit();
+
         } else {
           make_file_insertion();
         }
@@ -35,13 +92,13 @@
       file_in_use: function (elem) {
         if(elem) {
           var li_elems = document.getElementsByTagName("li");
-          
+
           for(var i = 0; i<li_elems.length; i++){
             li_elems[i].style.background = '';
           }
-          
+
           elem.parentNode.style.background = 'Blue';
-          document.upload_form.selected_file.value = elem.attributes.getNamedItem("href").value;
+          $('#selected_file').val(elem.attributes.getNamedItem("href").value)
         }
         return false;
       },
@@ -49,52 +106,52 @@
         make_file_insertion();
       }
     }
+      $(document).ready(function(){
+          FileBrowserDialogue.init();
+      });
 
-    tinyMCEPopup.onInit.add(FileBrowserDialogue.init, FileBrowserDialogue);
   </script>
 </head>
 <body id="filebrowser" onload="{% if uploaded_file %}FileBrowserDialogue.insert_uploaded_file();{% endif %}">
-  <div class="tabs">
-    <ul>
-      {% if is_images_dialog %}
-        <li id="images_tab" class="{% if not upload_tab_active %}current{% endif %}">
-          <span>
-            <a href="javascript:mcTabs.displayTab('images_tab','images_panel');" onmousedown="return false;">
-              {% trans "Images list" %}
-            </a>
-          </span>
-        </li>
-      {% endif %}
-      {% if is_documents_dialog %}
-        <li id="documents_tab" class="{% if not upload_tab_active %}current{% endif %}">
-          <span>
-            <a href="javascript:mcTabs.displayTab('documents_tab','documents_panel');" onmousedown="return false;">
-              {% trans "Documents list" %}
-            </a>
-          </span>
-        </li>
-      {% endif %}
-      <li id="upload_tab" class="{% if upload_tab_active %}current{% endif %}">
-        <span>
-          <a href="javascript:mcTabs.displayTab('upload_tab','upload_panel');" onmousedown="return false;">{% trans "Upload new" %}</a>
-        </span>
-      </li>
-    </ul>
-  </div>
-  <form action="./" method="post" enctype="multipart/form-data" name="upload_form">
+
+<form action="./" method="post" enctype="multipart/form-data" id="upload_form">
+<div class="mce-container mce-panel">
+  <div class="mce-tabs">{% if is_images_dialog %}<div id="images_tab" class="mce-tab {% if not upload_tab_active %}mce-active{% endif %}">{% trans "Images list" %}</div>{% endif %}{% if is_documents_dialog %}<div id="documents_tab" class="mce-tab {% if not upload_tab_active %}mce-active{% endif %}">{% trans "Documents list" %}</div>{% endif %}<div id="upload_tab" class="mce-tab {% if upload_tab_active %}mce-active{% endif %}">{% trans "Upload new" %}</div></div>
+
+    <div class="mce-container-body mce-abs-layout" id="panel_wrapper"><div class="mce-abs-end"></div>
     {% csrf_token %}
-    <div class="panel_wrapper">
       {% if is_images_dialog %}
-        <div id="images_panel" class="panel{% if not upload_tab_active %} current{% endif %}">
-          <fieldset>
-            <legend>{% trans "Previosly uploaded images" %}</legend>
+
+        <div id="images_panel" class="panel {% if not upload_tab_active %}current{% endif %}">
+
+            <h3>{% trans "Previously uploaded images" %}</h3>
+            <div id="toolbar"><form id="changelist-search" action="" method="get">
+              <div><!-- DIV needed for valid HTML -->
+                <label for="searchbar"><img src="{% static "admin/img/icon_searchbox.png" %}" alt="Search" /></label>
+                <input type="text" size="40" name="q" value="{{ query.q }}" id="searchbar" />
+                <input id="search-button" type="submit" value="{% trans 'Search' %}" />
+                {% if query.filter_type %}<input type="hidden" name="filter_type" value="{{ query.filter_type }}" />{% endif %}
+                {% if query.filter_date %}<input type="hidden" name="filter_date" value="{{ query.filter_date }}" />{% endif %}
+                {% if query.o %}<input type="hidden" name="o" value="{{ query.o }}" />{% endif %}
+                {% if query.ot %}<input type="hidden" name="ot" value="{{ query.ot }}" />{% endif %}
+                {% if query.pop %}<input type="hidden" name="pop" value="{{ query.pop }}" />{% endif %}
+                {% if query.type %}<input type="hidden" name="type" value="{{ query.type }}" />{% endif %}
+                {% if query.format %}<input type="hidden" name="format" value="{{ query.format }}" />{% endif %}
+                {% if query.dir %}<input type="hidden" name="dir" value="{{ query.dir|urlencode }}" />{% endif %}
+                {% ifequal query.pop '3' %} {# Custom CKEditor fields #}
+                    {% if query.CKEditor %}<input type="hidden" name="CKEditor" value="{{ query.CKEditor }}" />{% endif %}
+                    {% if query.CKEditorFuncNum %}<input type="hidden" name="CKEditorFuncNum" value="{{ query.CKEditorFuncNum }}" />{% endif %}
+                {% endifequal %}
+              </div>
+            </form></div>
+
             {% if object_list %}
               <ul class="images_list">
                 {% for img in object_list %}
                   <li>
-                    {% thumbnail img.uploaded_file "100x100" crop="center" as im %}
+                    {% thumbnail img.uploaded_file "100x100" crop="center" as thumb %}
                       <a href="{{ img.uploaded_file.url }}" onClick="FileBrowserDialogue.file_in_use(this);return false;">
-                        <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" border="0" />
+                        <img src="{{ thumb.url }}" width="{{ thumb.width }}" height="{{ thumb.height }}" border="0" />
                       </a>
                     {% endthumbnail %}
                     <a href="{% url 'mce-filebrowser-remove-image' img.id %}" title="{% trans 'Remove' %}" class="rm">x</a>
@@ -104,14 +161,12 @@
             {% else %}
               <p>{% trans "No images uploaded" %}</p>
             {% endif %}
-          </fieldset>
           {% include "_paginator.html" %}
         </div>
       {% endif %}
       {% if is_documents_dialog %}
         <div id="documents_panel" class="panel{% if not upload_tab_active %} current{% endif %}">
-          <fieldset>
-            <legend>{% trans "Previosly uploaded documents" %}</legend>
+          <h3>{% trans "Previously uploaded documents" %}</h3>
             {% if object_list %}
               <ul class="documents_list">
                 {% for doc in object_list %}
@@ -126,24 +181,36 @@
             {% else %}
               <p>{% trans "No documents uploaded" %}</p>
             {% endif %}
-          </fieldset>
           {% include "_paginator.html" %}
         </div>
       {% endif %}
-      <div id="upload_panel" class="panel{% if upload_tab_active %} current{% endif %}">
-        <fieldset>
-          <legend>
+      <div id="upload_panel" class="panel {% if upload_tab_active %}current{% endif %}">
+
+          <h3>
             {% trans "Upload file" %}
-          </legend>
+          </h3>
           {{ upload_form }}
-        </fieldset>
+
       </div>
-    </div>
-    <div class="mceActionPanel">
-      <input type="button" id="insert" value="{% trans 'Insert' %}" onClick="FileBrowserDialogue.image_select();" />
-      <input type="button" id="cancel" value="{% trans 'Cancel' %}" onclick="tinyMCEPopup.close();" />
-    </div>
-    <input type="hidden" name="selected_file" value="{% if uploaded_file %}{{ uploaded_file.uploaded_file.url }}{% endif %}" />
-  </form>
-</body> 
+
+   </div>
+
+
+  <div class="mce-container mce-panel mce-foot" >
+      <div class="mce-container-body mce-abs-layout" style="height: 50px;">
+          <div class="mce-abs-end"></div>
+          <div class="mce-widget mce-btn mce-primary mce-first mce-abs-layout-item" id="insert_button" role="button" style="right: 10px; top: 10px;">
+              <button tabindex="-1" type="button" role="presentation" style="height: 100%; width: 100%;">{% trans 'Insert' %}</button>
+          </div>
+          <div tabindex="-1" class="mce-widget mce-btn mce-last mce-abs-layout-item" id="cancel_button" role="button" style="right: 80px; top: 10px;">
+              <button tabindex="-1" type="button" role="presentation" style="height: 100%; width: 100%;">{% trans 'Cancel' %}</button>
+          </div>
+      </div>
+  </div>
+  <input type="hidden" name="selected_file" id="selected_file" value="{% if uploaded_file %}{{ uploaded_file.uploaded_file.url }}{% endif %}" />
+
+
+</div>
+</form>
+</body>
 </html>
