@@ -1,16 +1,12 @@
-This is a fork of https://github.com/aisayko/Django-tinymce-filebrowser
+This is a fork of https://github.com/aisayko/Django-tinymce-filebrowser, including the changes of https://github.com/FullFact/Django-tinymce-filebrowser
 
 Updated for TinyMCE 4 and added new settings which can be set as follows
 
 MCE_FILEBROWSER_JQUERY = 'js/jquery-1.9.1.min.js'
 
-MCE_FILEBROWSER_UPLOADDIR = 'uploads/mce_filebrowser'
-
 MCE_FILEBROWSER_THEMECSS = 'js/3rdparty/tinymce4.0.2/skins/lightgray/skin.min.css'
 
-MCE_FILEBROWSER_PERUSER = True
-
-South migrations have also beed added
+In addition, uploads are linked to users and only available to authenticated ones. The returned url is given in absolute path.
 
 django-tinymce-filebrowser
 ===
@@ -38,9 +34,9 @@ Add tinymce and mce_filebrowser to INSTALLED_APPS in settings.py for your projec
 Note: sorl.thumbnail is required package for correct filebrowser work.
 
 Migrate django-tinymce-filebrowser models
-    
+
     $ python manage.py migrate mce_filebrowser
-    
+
 Change tinymce config to work with filebrowser:
 
     TINYMCE_DEFAULT_CONFIG = {
@@ -63,7 +59,7 @@ In your models.py code:
     class MyModel(models.Model):
         ...
         content = HTMLField()
-        
+
 In your admin.py:
 
     from django.contrib import admin
@@ -82,14 +78,10 @@ If You do not use django-tinymce package then add next lines to TinyMCE init:
 
     tinyMCE.init({
         ...
-        "file_browser_callback": "mce_filebrowser"
+        file_browser_callback: mce_filebrowser
     })
-    
+
 
 Additional settings:
 
     FILEBROWSER_PER_PAGE - files per page in filebrowser
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/aisayko/django-tinymce-filebrowser/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
