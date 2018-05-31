@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
+from django.utils.text import slugify
 
 from mce_filebrowser.models import FileBrowserFile
 from mce_filebrowser.forms import FileUploadForm
@@ -29,6 +30,9 @@ def filebrowser(request, file_type):
 
         if upload_form.is_valid():
             uploaded_file = upload_form.save(commit=False)
+            fname = request.FILES['uploaded_file'].name.rpartition(".")
+            filename = "{}.{}".format(slugify(fname[0]), fname[2])
+            uploaded_file.file_name = filename
             uploaded_file.file_type = file_type
             uploaded_file.user_id = request.user.id
             uploaded_file.save()
