@@ -2,7 +2,7 @@ from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.text import slugify
 
 from mce_filebrowser.models import FileBrowserFile
