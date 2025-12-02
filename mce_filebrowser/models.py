@@ -1,7 +1,7 @@
 import datetime
 import uuid
 from django.db import models
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 
 def content_file_name(instance, filename):
